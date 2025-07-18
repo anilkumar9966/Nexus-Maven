@@ -1,0 +1,62 @@
+# Integration of Azure Data Factory (ADF) with SQL Database
+
+# 1. Create a Linked Service in ADF to connect to your SQL Database.
+# Example: Azure SQL Database Linked Service (JSON template)
+
+{
+    "name": "AzureSqlDatabaseLinkedService",
+    "properties": {
+        "type": "AzureSqlDatabase",
+        "typeProperties": {
+            "connectionString": "Server=tcp:<your-server>.database.windows.net,1433;Database=<your-db>;User ID=<your-user>;Password=<your-password>;"
+        }
+    }
+}
+
+# 2. Create a Dataset in ADF for your SQL table.
+# Example: Azure SQL Table Dataset (JSON template)
+
+{
+    "name": "AzureSqlTableDataset",
+    "properties": {
+        "linkedServiceName": {
+            "referenceName": "AzureSqlDatabaseLinkedService",
+            "type": "LinkedServiceReference"
+        },
+        "type": "AzureSqlTable",
+        "typeProperties": {
+            "tableName": "<your-table>"
+        }
+    }
+}
+
+# 3. Use a Copy Activity in your ADF pipeline to move data to/from SQL.
+# Example: Copy Activity (JSON template)
+
+{
+    "name": "CopyFromBlobToSql",
+    "type": "Copy",
+    "inputs": [
+        {
+            "referenceName": "<your-source-dataset>",
+            "type": "DatasetReference"
+        }
+    ],
+    "outputs": [
+        {
+            "referenceName": "AzureSqlTableDataset",
+            "type": "DatasetReference"
+        }
+    ],
+    "typeProperties": {
+        "source": {
+            "type": "BlobSource"
+        },
+        "sink": {
+            "type": "SqlSink"
+        }
+    }
+}
+
+# Note: You can configure these steps using the Azure Data Factory UI as well.
+# Replace placeholders (e.g., <your-server>, <your-db>, <your-table>) with your actual values.
